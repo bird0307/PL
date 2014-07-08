@@ -8,13 +8,15 @@ function [E DOS] = construct_DOS( Eg, N0, Etail, E0, Emin, Emax, disc )
 % Emin...minimum energy (well below valence band edge)
 % Emax...maximum energy (well above conduction band edge)
 
+
+
 E = (Emin : disc : Emax)'; % energy vector
 EC = 0; % conduction band edge
 EV = EC - Eg; % valence band edge
 
 % conduction band side
 % calculate DOS at connection point between parabolic band and exponential tail
-NC0tail = N0 * sqrt( Etail - EC )
+NC0tail = N0 * sqrt( Etail - EC );
 % find all indexes in E-vector with energies <= (Etail - EC) and store
 % indices in dummy1
 dummy1 = (E <=  Etail - EC );
@@ -26,13 +28,13 @@ NCBT = NC0tail * exp(-(Etail-E(dummy1))/E0);
 dummy2 = ~dummy1;
 % calculate parabolic DOS
 NC0 = N0 * sqrt( E(dummy2) );
-
+% combine exponential and parabolic part
 DOS_CB = [NCBT;NC0];
 
 
 % valence band side
 % calculate DOS at connection point between parabolic band and exponential tail
-NV0tail = N0 * sqrt( -(EV + Eg - Etail) )
+NV0tail = N0 * sqrt( -(EV + Eg - Etail) );
 % find all indexes in E-vector with energies >= (EV - Etail) and store
 % indices in dummy1
 dummy1 = (E >=  EV - Etail );
@@ -45,9 +47,10 @@ NVBT = NV0tail * exp(-(E(dummy1) - EV + Etail)/E0);
 dummy2 = ~dummy1;
 % calculate parabolic DOS
 NV0 = N0 * sqrt( EV - E(dummy2) );
-
-
-%semilogy(E(dummy1),NVBT,E(dummy2),NV0)
+% combine parabolic and exponential part
 DOS_VB = [NV0;NVBT];
 
-DOS = DOS_VB;
+
+% construct DOS as superposition of CB DOS and VB DOS
+DOS = DOS_CB + DOS_VB;
+

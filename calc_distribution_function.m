@@ -1,4 +1,4 @@
-function [E fn fp] = calc_distribution_function( mu, T, Eg, sigma_n_CB, sigma_p_CB, sigma_n_VB, sigma_p_VB, E )
+function [E fn fp Ef] = calc_distribution_function( mu, T, Eg, sigma_n_CB, sigma_p_CB, sigma_n_VB, sigma_p_VB, E )
 
 % physical constants used in calculation
 c = 3E10;   % vacuum speed of light in cm/s
