@@ -1,12 +1,4 @@
-function [E fn fp Ef] = calc_distribution_function( mu, T, Eg, sigma_n_CB, sigma_p_CB, sigma_n_VB, sigma_p_VB, E )
-
-% physical constants used in calculation
-c = 3E10;   % vacuum speed of light in cm/s
-k = 8.617E-5;  % Boltzmann's constant in eV/K
-h = 4.135E-15;  % Planck's constant in eV*s
-hbar = h/2/pi;  % reduced Planck constant in eV*s
-v = 1E7;        % thermal velocity in cm/s
-
+function [E fn fp Ef] = calc_distribution_function( mu, T, Eg, sigma_n_CB, sigma_p_CB, sigma_n_VB, sigma_p_VB, E, constant )
 
 EC = 0;
 EV = EC - Eg;
@@ -24,9 +16,9 @@ Efp = Ef - mu/2;
 Neff = 1E21;
 
 % free electron density in CB
-n = Neff*exp((Efn-EC)/k/T);
+n = Neff*exp((Efn-EC)/constant.k/T);
 % free hole density in VB
-p = Neff*exp((EV-Efp)/k/T);
+p = Neff*exp((EV-Efp)/constant.k/T);
 
 
 % initialize vector for capture cross sections
@@ -47,11 +39,12 @@ sigma_p(~dummy1) = sigma_p_VB;
 
 
 % help variables
-n_bar = v*sigma_n*n;
-p_bar = v*sigma_p*p;
+n_bar = constant.v*sigma_n*n;
+p_bar = constant.v*sigma_p*p;
 % emission rates e_n and e_p for electrons and holes
-e_n = v.*sigma_n.*Neff.*exp((E-EC)/k/T);
-e_p = v.*sigma_p.*Neff.*exp((EV-E)/k/T);
+e_n = repmat( constant.v.*sigma_n.*Neff.*exp((E-EC)/constant.k/T), 1, length(mu)); %.* ones(length(E),length(mu));
+e_p = repmat( constant.v.*sigma_p.*Neff.*exp((EV-E)/constant.k/T), 1, length(mu));
+
 
 % modified quasi-Fermi distribution according to Simmons and Taylor
 fn = (n_bar + e_p)./(e_n+n_bar+p_bar+e_p);
